@@ -23,6 +23,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class Producer {
+    public static final int EVENTS_TO_READ = 50;
     @Autowired
     private KafkaTemplate<String, Event> kafkaTemplate;
 
@@ -42,7 +43,7 @@ public class Producer {
 
     @Scheduled(fixedRate = 864000000)
     public void sendMessage() {
-       while(eventCount < 50) {
+       while(eventCount < EVENTS_TO_READ) {
            String bodyForEvents = externalApiInvoker.callExternalApi(githubUrl + "?page=" + PageCount++);
            List<Event> events = convertStringToObject(bodyForEvents);
            assert events != null;
@@ -59,7 +60,7 @@ public class Producer {
                    log.info("Successfully published event {}", event.getId());
                }
                eventCount++;
-               if (eventCount == 10) {
+               if (eventCount == EVENTS_TO_READ) {
                    break;
                }
            }
